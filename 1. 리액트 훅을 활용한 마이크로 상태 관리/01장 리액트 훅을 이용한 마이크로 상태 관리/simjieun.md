@@ -30,6 +30,156 @@
 > useState의 기본 사용법부터 고급 사용법까지 알아본다.
 
 ## 값으로 상태 갱신하기
-- useState로 상태 값을 갱신하는 한가지 방법은 새로운값을 제공하는 것이다.
+- useState로 상태 값을 갱신하는 한가지 방법은 새로운 값을 제공하는 것이다.
+```javascript
+const Component = () => {
+  const [count, setCount] = useState(0);
+  return (
+          <div>
+            {count}
+            <button onClick={() => setCount(1)}>Set Count to 1</button>
+          </div>
+  );
+};
+```
 - **베일아웃** : 리렌더링을 발생시키지 않는 것
-- 
+
+## 함수로 상태 갱신하기
+```javascript
+const Component = () => {
+  const [count, setCount] = useState(0);
+  return (
+          <div>
+            {count}
+            <button onClick={() => setCount((c) => c + 1)}>
+              Increment Count
+            </button>
+          </div>
+  );
+};
+```
+
+## 지연 초기화
+- useState가 호출되기 전까지 init함수는 평가되지 않고 느리게 평가된다. 즉, 컴포넌트가 마운트될때 한번만 호출된다.
+```javascript
+const init = () => 0;
+
+const Component = () => {
+  const [count, setCount] = useState(init);
+  return (
+          <div>
+            {count}
+            <button onClick={() => setCount((c) => c + 1)}>
+              Increment Count
+            </button>
+          </div>
+  );
+};
+```
+
+# useReducer 사용하기
+## 기본 사용법
+```javascript
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'INCREMENT':
+      return { ...state, count: state.count + 1 };
+    case 'SET_TEXT':
+      return { ...state, text: action.text };
+    default:
+      throw new Error('unknown action type');
+  }
+};
+
+const Component = () => {
+  const [state, dispatch] = useReducer(
+          reducer,
+          { count: 0, text: 'hi' },
+  );
+  return (
+          <div>
+            {state.count}
+            <button onClick={() => dispatch({ type: 'INCREMENT' })}>
+              Increment count
+            </button>
+            <input value={state.text} onChange={(e) => dispatch({ type: 'SET_TEXT', text: e.target.value })} />
+          </div>
+  );
+};
+```
+## 베일아웃
+```javascript
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'INCREMENT':
+      return { ...state, count: state.count + 1 };
+    case 'SET_TEXT':
+      if (!action.text) {
+        // bail out
+        return state
+      }
+      return { ...state, text: action.text };
+    default:
+      throw new Error('unknown action type');
+  }
+};
+```
+## 원시값
+- useReducer는 객체가 아닌 값, 즉 숫자나 문자열 같은 원시 값에 대해 작동한다.
+```javascript
+const Component = () => {
+  const [isOpen, toggleOpen] = useReducer((state) => !state, false);
+  return (
+          <div>
+            <button onClick={toggleOpen}>
+              열기
+            </button>
+            {isOpen ? "open" : "close"}
+          </div>
+  );
+};
+```
+## 지연초기화
+- init 함수는 컴포넌트가 마운트될 때 한번만 호출되므로 무거운 연산을 포함할 수 있다. 
+- useState와 달리 init함수는 useReducer의 두번째 인수인 initialArg를 받는다.
+```javascript
+const init = (count) => ({ count, text: 'hi' });
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'INCREMENT':
+      return { ...state, count: state.count + 1 };
+    case 'SET_TEXT':
+      return { ...state, text: action.text };
+    default:
+      throw new Error('unknown action type');
+  }
+};
+
+const Component = () => {
+  const [state, dispatch] = useReducer(reducer, 0, init);
+  return (
+          <div>
+            {state.count}
+            <button
+                    onClick={() => dispatch({ type: 'INCREMENT' })}
+            >
+              Increment count
+            </button>
+            <input
+                    value={state.text}
+                    onChange={(e) =>
+                            dispatch({ type: 'SET_TEXT', text: e.target.value })}
+            />
+          </div>
+  );
+};
+```
+
+# useState와 useReducer의 유사점과 차이점
+
+## useReducer를 이용한 useState 구현
+## useState를 이용한 useReducer 구현
+## 초기화 함수 사용하기
+## 인라인 리듀서 사용하기
+
