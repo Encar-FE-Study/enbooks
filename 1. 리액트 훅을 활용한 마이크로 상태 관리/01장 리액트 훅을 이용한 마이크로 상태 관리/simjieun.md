@@ -179,7 +179,18 @@ const Component = () => {
 # useState와 useReducer의 유사점과 차이점
 
 ## useReducer를 이용한 useState 구현
+- useReducer로 useState 구현하는 것은 가능하다.
+- 리액트 내부에서 useState는 useReducer로 구현되어 있다.
+- useState가 사용되는 곳이라면 어디든 useReducer로 대체할 수 있다.
+
 ## useState를 이용한 useReducer 구현
-## 초기화 함수 사용하기
-## 인라인 리듀서 사용하기
+- useReducer를 useState로 거의 대체 가능하다.
+- 하지만 미묘한 차이가 있다.
+- 한가지 차이점은,
+  ### 초기화 함수 사용하기
+  - reducer와 init을 훅이나 컴포넌트 외부에서 정의할 수 있다는 점이다.
+  - 이는 useReducer에서만 가능하고 useState에서는 불가능하다
+  
+  ### 인라인 리듀서 사용하기
+  - 인라인 리듀서 함수는 외부 변수에 의존할 수 있다. 이는 useReducer에서만 가능하며 useState에서는 불가능하다
 
