@@ -94,3 +94,98 @@ const Component2 = () => {
 > 3. Key, Props가 변경될 때
 > 4. 부모컴포넌트가 렌더링 될 때
 > 5. Context 값이 변경될 때
+
+- codeSandBox 링크 : https://codesandbox.io/p/sandbox/cm3hk3?file=%2Fsrc%2FApp.tsx%3A49%2C31
+- 컨텍스트가 변경되었기 때문에 리렌더링이 이뤄지고, memo는 props 변경을 기준으로만 리렌더링을 방지할 뿐, context 변경에 대해서는 방지하지 않는다는걸 알수 있다.
+
+### 컨텍스트에 객체를 사용할 때의 한계점
+- 컨텍스트 값에 원시값이 아닌 객체값을 사용할때에는 불필요한 리렌더링이 발생할수 있다.
+- 객체의 하나의 키만 변경하고 다른 키를 변경하지 않았을때, 다른키를 구독하는 컴포넌트가 리렌더링이 된다.
+
+## 전역 상태를 위한 컨텍스트 만들기
+- 리액트 컨텍스트의 동작 방식을 기반으로 전역 상태와 함께 컨텍스트를 사용하는 것과 관련해서 두가지 해결책을 살펴보자
+- codeSandBox 링크 : https://codesandbox.io/p/sandbox/cm3hk3?file=%2Fsrc%2FApp.tsx%3A42%2C25
+
+### 작은 상태 조각 만들기
+- 첫번째 해결책은 전역 상태를 여러 조각으로 나누는 것이다.
+- 합쳐진 큰 객체를 사용하는 대신 각 조각에 대한 컨텍스트와 전역 상태를 만든다.
+
+### useReducer로 하나의 상태를 만들고 여러 개의 컨텍스트로 전파하기
+- 두번째 해결책은 단일 상태를 만들고 여러 컨텍스트를 사용해 상태 조각을 배포하는 것이다.
+- 이 경우 상태를 갱신하는 함수를 배포하는것은 별도의 컨텍스트로 해야 한다.
+- useReducer를 기반으로 했을때, 상태 조각을 위한 컨텍스트와 디스패치(dispatch) 함수를 위한 컨텍스트가 존재한다.
+
+> 불필요한 리렌더링을 피하기 위해 여러 컨텍스트를 사용하는 것이다.
+
+## 컨텍스트 사용을 위한 모범 사례
+
+### 사용자 정의 훅과 공급자 컴포넌트 만들기
+- 사용자 정의 훅과 공급자 컴포넌트를 생성한다
+- 기본 컨텍스트 값을 null로 만들고 사용자 정의 훅에서 값이 null인지 확인한다
+
+```javascript
+type CountContextType = [number, Dispatch<SetStateAction<number>>];
+
+const Count1Context = createContext<CountContextType | null>(null);
+export const Count1Provider = ({ children }: { children: ReactNode }) => (
+  <Count1Context.Provider value={useState(0)}>
+    {children}
+  </Count1Context.Provider>
+);
+export const useCount1 = () => {
+  const value = useContext(Count1Context);
+  if (value === null) throw new Error("Provider missing");
+  return value;
+};
+```
+### 사용자 정의 훅이 있는 팩토리 패턴
+- 사용자 정의 훅과 공급자 컴포넌트를 만드는 것은 다소 반복적인 작업이니, 이런 작업을 수행하는 팩토리 패턴으로 컨텍스트를 구현해본다.
+- 생성 시 초깃값을 정의하는 대신 런타임에 상태의 초깃값을 설정할 수 있다는 장점이 있다.
+- createStateContext의 핵심은 반복적인 코드를 피하면서 같은 기능을 제공하는 것이다.
+```javascript
+import { ReactNode, createContext, useContext, useState } from "react";
+
+const createStateContext = <Value, State>(
+  useValue: (init?: Value) => State
+) => {
+  const StateContext = createContext<State | null>(null);
+  const StateProvider = ({
+    initialValue,
+    children,
+  }: {
+    initialValue?: Value;
+    children?: ReactNode;
+  }) => (
+    <StateContext.Provider value={useValue(initialValue)}>
+      {children}
+    </StateContext.Provider>
+  );
+  const useContextState = () => {
+    const value = useContext(StateContext);
+    if (value === null) throw new Error("Provider missing");
+    return value;
+  };
+  return [StateProvider, useContextState] as const;
+};
+
+const useNumberState = (init?: number) => useState(init || 0);
+
+const [Count1Provider, useCount1] = createStateContext(useNumberState);  
+```
+### reduceRight를 이용한 공급자 중첩 방지
+- Provider의 중첩이 많을때 코딩 스타일을 완화하기 위해 **reduceRight**를 사용할 수 있다.
+```javascript
+const App = () => {
+  const providers = [
+    [Count1Provider, { initialValue: 10 }],
+    [Count2Provider, { initialValue: 20 }],
+    [Count3Provider, { initialValue: 30 }],
+    [Count4Provider, { initialValue: 40 }],
+    [Count5Provider, { initialValue: 50 }],
+  ] as const;
+  return providers.reduceRight(
+    (children, [Component, props]) => createElement(Component, props, children),
+    <Parent />
+  );
+};
+```
