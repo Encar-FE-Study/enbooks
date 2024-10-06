@@ -40,4 +40,13 @@ const unsubscribe = store.subscribe(() => {
 });
 ```
 - store에 subscribe 메서드가 있고, 이 메서드는 callback 함수를 받고 unsubscribe 함수를 반환한다.
+- codeSandbox 링크 :https://codesandbox.io/p/devbox/9rn63t?file=%2Fsrc%2F04-2.subscription_to_module_state.tsx%3A23%2C19
+- createStore에 콜백을 호출하는 subscribe 메서드와 setState, getState 메서드가 있다.
+
+## 선택자와 useSubscription 사용하기
+- 컴포넌트가 필요로 하는 상태의 일부분만 반환하는 선택자를 도입
+- useStoreSelector의 useState훅은 상태의 전체 내용 대신 selector의 반환 값을 가진다.
+- codeSandbox 링크 : https://codesandbox.io/p/devbox/enbooks-practice-9rn63t?file=%2Fsrc%2F04-3.use_store_with_selector.tsx%3A52%2C28
+- useStoreSelector 훅은 useEffect는 조금 늦게 실행되기 때문에 재구독될때까지는 갱신되기 이전 상태값을 반환한다. 그래서 리액트팀은 **use-subscription** (https://www.npmjs.com/package/use-subscription) 이라는 공식적인 훅을 제공한다.
+- https://github.com/facebook/react/blob/main/packages/use-sync-external-store/src/useSyncExternalStoreWithSelector.js
 - 
