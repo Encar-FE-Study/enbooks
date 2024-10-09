@@ -180,7 +180,7 @@ const Component = () => {
 
 ## useReducer를 이용한 useState 구현
 - useReducer로 useState 구현하는 것은 가능하다.
-- 리액트 내부에서 useState는 useReducer로 구현되어 있다.
+- 리액트 내부에서 useState는 useReducer로 구현되어 있다.(실제 구현부 : https://github.com/facebook/react/blob/main/packages/react-reconciler/src/ReactFiberHooks.js)
 - useState가 사용되는 곳이라면 어디든 useReducer로 대체할 수 있다.
 
 ## useState를 이용한 useReducer 구현
