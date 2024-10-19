@@ -2,6 +2,8 @@
 
 > [Zustand](https://github.com/pmndrs/zustand)는 주로 리액트의 모듈 상태를 생성하도록 설계된 작은 라이브러이다.
 > Zustand는 24.10.15 일자 기준으로 어제(24.10.14) 5버전이 나왔다.
+> 
+> [Zustand를 이용한 개인 프로젝트](https://github.com/simjieun/client-store-project/tree/main/zustand)
 
 ## 모듈 상태와 불변 상태 이해하기
 - Zustand는 상태를 유지하는 store를 만드는 데 사용되는 라이브러리이다.
