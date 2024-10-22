@@ -65,6 +65,33 @@ export default App;
 - 아톰 구성 객체는 atom 함수로 생성되며, 아톰 값은 useAtom 훅이 반환한다. 
 - useAtom 훅은 스토어의 특정 아톰을 구독하며, 구독 기반이므로 불필요한 리렌더링을 방지할 수 있다.
 
+#### Jotai에서 왜 WeakMap 객체를 사용 했을까?
+```javascript
+let object = { name: 'Garbage' };
+let collector = [object];
+object = null; // 참조를 null로 덮어씀
+
+console.log(JSON.stringify(collector[0])); // {"name":"Garbage"}
+
+let obj2 = { name: 'Trash' };
+let weakMap = new WeakMap();
+
+weakMap.set(obj2, 'die');
+obj2 = null; // 참조를 덮어씀
+
+console.log(typeof weakMap.get(obj2)); // undefined
+```
+- 위의 예제를 보면 배열은 각 키와 각 값에 대한 참조가 무기한 유지되도록 보장하기 때문인데, 이 때문에 다른 곳에서 객체를 참조하지 않더라도 키가 가비지 컬렉션 대상이 되지 못하지만
+- WeakMap은 해당 객체에 대한 약한 참조만 가지기 때문에, 다른 곳에서 객체를 참조하지 않으면 객체는 메모리에서 해제된다.
+- obj2는 이미 null로 덮어써졌고, 이전에 저장된 객체는 가비지 컬렉션으로 제거되었기 때문에 undefined가 반환된다.
+
+##### WeakMap 사용의 장점
+1. 메모리 관리: 객체가 더 이상 필요 없을 때 자동으로 메모리에서 해제되어, 메모리 누수(memory leak)를 방지한다.
+2. 자동 메모리 해제: 참조가 끊기면 가비지 컬렉션이 발생하여 메모리를 효율적으로 관리할 수 있다.
+
+#### 결론, 이런 사유로 Jotai에서 WeakMap을 사용한게 아닐까 싶다. [Jotai WeakMap을 이용한 useAtomValue 소스링크](https://github.com/pmndrs/jotai/blob/main/src/react/useAtomValue.ts)
+
+
 ## 렌더링 최적화
 ## Jotai가 아톰 값을 저장하는 방식 이해하기
 ## 배열 구조 추가하기
