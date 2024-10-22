@@ -200,6 +200,10 @@ export default memo(TodoItem);
 - Zustand 상태 모델은 객체 불변성 규칙과 완전히 일치
 - 라이브러리 사용의 단순성과 번들크기가 작아 좋음 (1~2kb로 가장 작음)
 - 선택자를 이용한 수동 렌더링 최적화가 단점 (custom Selector를 사용하면 어느정도 해결?)
+> update (10.21) custom selector나 zustand에서 제공해주는 shallow함수를 파라미터로 넘기는 것보다 zustand에서 공식적으로 제공한 useShallow를 사용하는 방식 사용을 권장 (2023/10~)
+https://velog.io/@ony_/zustand-%EB%A0%8C%EB%8D%94%EB%A7%81-%EC%B5%9C%EC%A0%81%ED%99%94-shallow-%EB%8C%80%EC%8B%A0-useShallow-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0
+https://github.com/pmndrs/zustand/blob/main/docs/guides/prevent-rerenders-with-use-shallow.md
+https://github.com/search?q=repo%3Apmndrs%2Fzustand+useshallow&type=commits
 
 ## 느낀점
 
