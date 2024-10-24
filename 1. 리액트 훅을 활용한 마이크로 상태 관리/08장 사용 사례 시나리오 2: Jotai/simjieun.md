@@ -91,8 +91,44 @@ console.log(typeof weakMap.get(obj2)); // undefined
 
 #### 결론, 이런 사유로 Jotai에서 WeakMap을 사용한게 아닐까 싶다. [Jotai WeakMap을 이용한 useAtomValue 소스링크](https://github.com/pmndrs/jotai/blob/main/src/react/useAtomValue.ts)
 
-
 ## 렌더링 최적화
+- 아톰을 원시 값처럼 원하는 만큼 작게 만들어서 리렌더링을 제어할 수 있다.
+
+1. 하향식(top-down) 접근법
+- 아래의 store와 선택자 접근하는 방식을 하향식 접근법이라고 한다.
+```javascript
+const personStore = createStore({
+    firstName: "React",
+    lassName: "Hooks",
+    age:3,
+})
+
+const selectFirstName = (state) => state.firstName;
+const selectLastName = (state) => state.lastName;
+
+const Person = () => {
+    const firtstName = useStoreSelector(store, selectFirstName);
+    const lastName = useStoreSelector(store, selectLastName);
+    return <>{firtstName} {lastName}</>;
+}
+```
+2. 상향식(bottom-up) 접근법
+- 아래 처럼 작은 아톰을 만들고 이를 결합해서 더 큰 아톰을 만드는 방식을 상향식 접근법이라 할 수 있다.
+```javascript
+const firstNameAtom = atom("React");
+const lastNameAtom = atom("Hooks");
+const ageAtom = atom(3);
+
+const fullNameAtom = atom((get) => ({
+    firstName: get(firstNameAtom),
+    lastName: get(lastNameAtom),
+}));
+
+const Person = () => {
+    const person = useAtom(fullNameAtom);
+    return <>{person.firstName} {person.lastName}</>
+}
+```
 ## Jotai가 아톰 값을 저장하는 방식 이해하기
 ## 배열 구조 추가하기
 ## Jotai의 다양한 기능 사용하기
