@@ -130,5 +130,46 @@ const Person = () => {
 }
 ```
 ## Jotai가 아톰 값을 저장하는 방식 이해하기
+- 원시 아톰은 useState처럼 동작하도록 설계 되어있다.
+- 아톰 값을 저장하는 store가 따로 있다. store에는 키가 아톰 구성 객체이고 값이 아톰 값이 WeakMap객체가 있다.
+- 
 ## 배열 구조 추가하기
+- 아톰 속 아톰들(Atoms-in-Atom) 이라고 부르는 새로운 패턴을 이용하여 리렌더링을 최적화 할수 있다.
+- 해당 내용은 프로젝트로 https://github.com/simjieun/client-store-project/tree/main/jotai
+
 ## Jotai의 다양한 기능 사용하기
+### 아톰의 write 함수 정의하기
+```javascript
+const countAtom = atom(0);
+
+const doubledCountAtom = atom(
+    (get) => get(countAtom) * 2,
+    (get, set, arg) => set(countAtom, arg/2)
+);
+```
+- get은 아톰의 값을 반환하는 함수다.
+- set은 아톰의 값을 설정하는 함수다
+- arg는 아톰을 갱신할 때 받을 임의의 값이다.(이 경우에는 doubledCountAtom을 말한다)
+
+### 액션 아톰 사용하기
+```javascript
+const countAtom = atom(0);
+
+const incrementCountAtom = atom(
+    null, 
+    (get, set, arg) => set(countAtom, (c) => c + 1)
+);
+```
+
+### 아톰의 onMount 옵션 이해하기
+- 아톰이 사용되기 시작할 때 특정 로직을 실행하고 싶을때는 onMount 옵션을 사용할 수 있다.
+```javascript
+const countAtom = atom(0);
+countAtom.onMount = (setCount) => {
+    console.log("count atom 사용을 시작합니다.");
+    const onUnmount = () => {
+        console.log("count atom 사용이 끝났습니다.")
+    }
+    return onUnmount;
+}
+```
