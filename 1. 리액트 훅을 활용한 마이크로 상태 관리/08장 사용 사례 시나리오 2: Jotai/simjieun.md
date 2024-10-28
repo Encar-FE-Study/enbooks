@@ -89,7 +89,7 @@ console.log(typeof weakMap.get(obj2)); // undefined
 1. 메모리 관리: 객체가 더 이상 필요 없을 때 자동으로 메모리에서 해제되어, 메모리 누수(memory leak)를 방지한다.
 2. 자동 메모리 해제: 참조가 끊기면 가비지 컬렉션이 발생하여 메모리를 효율적으로 관리할 수 있다.
 
-#### 결론, 이런 사유로 Jotai에서 WeakMap을 사용한게 아닐까 싶다. [Jotai WeakMap을 이용한 useAtomValue 소스링크](https://github.com/pmndrs/jotai/blob/main/src/react/useAtomValue.ts)
+#### 결론, 이런 사유로 Jotai에서 WeakMap을 사용한게 아닐까 싶다. [Jotai WeakMap을 이용한 Store 소스링크](https://github.com/pmndrs/jotai/blob/main/src/vanilla/store.ts)
 
 ## 렌더링 최적화
 - 아톰을 원시 값처럼 원하는 만큼 작게 만들어서 리렌더링을 제어할 수 있다.
