@@ -65,4 +65,13 @@ const Counter2 = () => {
 - 변경 가능한 갱신과 불변 갱신 두가지 혼용
 - 자동 렌더링 최적화 -> 디버깅 어려움
 
+## 개발 동기
+- Mobx의 존재(같은 proxy 패턴)
+    - Mutable state를 Hooks Api에서 사용 가능하도록 설계 <> Mobx(HoC API)
+- React-tracked 활용도 증가
+    - proxy 기반의 라이브러리 개발을 통해 proxy 패턴 보급
+
+- [How Valtio Proxy State Works (Vanilla Part)](https://blog.axlight.com/posts/how-valtio-proxy-state-works-vanilla-part/)
+- [How Valtio Proxy State Works (React Part)](https://blog.axlight.com/posts/how-valtio-proxy-state-works-react-part/)
+
 - [valtio 활용 앱](https://github.com/youngrove/client-state-packages)
